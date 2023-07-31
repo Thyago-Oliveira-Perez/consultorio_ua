@@ -15,32 +15,35 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/pacientes")
 public class PacienteController {
 
-    @Autowired
-    private PacienteService pacienteService;
+    private PacienteService service;
+
+    PacienteController(PacienteService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{idPaciente}")
     public ResponseEntity<Paciente> findById(@PathVariable("idPaciente")Long idPaciente)
     {
-        return ResponseEntity.ok().body(this.pacienteService.findById(idPaciente).get());
+        return ResponseEntity.ok().body(this.service.findById(idPaciente).get());
     }
 
     @GetMapping("/search/{namePaciente}")
     public ResponseEntity<Page<Paciente>> findByName(Pageable pageable, @PathVariable("namePaciente")String namePaciente)
     {
-        return ResponseEntity.ok().body(this.pacienteService.findByName(pageable, namePaciente));
+        return ResponseEntity.ok().body(this.service.findByName(pageable, namePaciente));
     }
 
     @GetMapping
     public ResponseEntity<Page<Paciente>> findAll(Pageable pageable)
     {
-        return ResponseEntity.ok().body(this.pacienteService.listAll(pageable));
+        return ResponseEntity.ok().body(this.service.listAll(pageable));
     }
 
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody Paciente paciente)
     {
         try{
-            this.pacienteService.save(paciente);
+            this.service.save(paciente);
             return ResponseEntity.ok().body(("Paciente Cadastrada com Sucesso!"));
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -52,7 +55,7 @@ public class PacienteController {
                                     @RequestBody Paciente paciente)
     {
         try{
-            this.pacienteService.update(paciente, idPaciente);
+            this.service.update(paciente, idPaciente);
             return ResponseEntity.ok().body(("Paciente Atualizado com Sucesso!"));
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -63,7 +66,7 @@ public class PacienteController {
     public ResponseEntity<?> updateStatus(@PathVariable("idPaciente") Long idPaciente)
     {
         try{
-            this.pacienteService.updateStatus(idPaciente);
+            this.service.updateStatus(idPaciente);
             return ResponseEntity.ok().body(("Paciente Desativado com Sucesso!"));
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body("Paciente não existe no banco!");
